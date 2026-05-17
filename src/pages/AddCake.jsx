@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { addCake } from "../services/api"
 import { useNavigate } from "react-router-dom"
 
 function AddCake() {
@@ -20,10 +19,23 @@ function AddCake() {
     })
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
 
-    await addCake(formData)
+    const savedCakes =
+      JSON.parse(localStorage.getItem("cakes")) || []
+
+    const newCake = {
+      ...formData,
+      id: Date.now()
+    }
+
+    const updatedCakes = [...savedCakes, newCake]
+
+    localStorage.setItem(
+      "cakes",
+      JSON.stringify(updatedCakes)
+    )
 
     navigate("/products")
   }
@@ -33,16 +45,50 @@ function AddCake() {
       onSubmit={handleSubmit}
       className="p-6 flex flex-col gap-4 max-w-md mx-auto"
     >
-        <h2 className="text-2xl font-bold">Add a New Cake</h2>
-      <input name="name" placeholder="Cake Name" onChange={handleChange} className="border p-2" />
+      <h2>Add a New Cake</h2>
+      <input
+        type="text"
+        name="name"
+        placeholder="Cake Name"
+        value={formData.name}
+        onChange={handleChange}
+        className="border p-2 rounded"
+      />
 
-      <input name="flavor" placeholder="Flavor" onChange={handleChange} className="border p-2" />
+      <input
+        type="text"
+        name="flavor"
+        placeholder="Flavor"
+        value={formData.flavor}
+        onChange={handleChange}
+        className="border p-2 rounded"
+      />
 
-      <input name="price" placeholder="Price" onChange={handleChange} className="border p-2" />
+      <input
+        type="number"
+        name="price"
+        placeholder="Price"
+        value={formData.price}
+        onChange={handleChange}
+        className="border p-2 rounded"
+      />
 
-      <input name="image" placeholder="Image URL" onChange={handleChange} className="border p-2" />
+      <input
+        type="text"
+        name="image"
+        placeholder="Image URL"
+        value={formData.image}
+        onChange={handleChange}
+        className="border p-2 rounded"
+      />
 
-      <textarea name="description" placeholder="Description" onChange={handleChange} className="border p-2" />
+      <textarea
+        name="description"
+        placeholder="Description"
+        value={formData.description}
+        onChange={handleChange}
+        className="border p-2 rounded"
+      />
 
       <button className="bg-[#d4af37] text-black p-2 rounded">
         Add Cake

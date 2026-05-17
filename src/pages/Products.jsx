@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+
 import CakeCard from "../components/CakeCard"
 import SearchBar from "../components/SearchBar"
 import useFetchCakes from "../hooks/useFetchCakes"
-import { deleteCake } from "../services/api"
 
 function Products() {
   const { cakes, setCakes } = useFetchCakes()
@@ -16,10 +16,16 @@ function Products() {
     cake.name.toLowerCase().includes(search.toLowerCase())
   )
 
-  const handleDelete = async (id) => {
-    await deleteCake(id)
+  const handleDelete = (id) => {
+    const updatedCakes =
+      cakes.filter((cake) => cake.id !== id)
 
-    setCakes(cakes.filter((cake) => cake.id !== id))
+    setCakes(updatedCakes)
+
+    localStorage.setItem(
+      "cakes",
+      JSON.stringify(updatedCakes)
+    )
   }
 
   const handleEdit = (cake) => {

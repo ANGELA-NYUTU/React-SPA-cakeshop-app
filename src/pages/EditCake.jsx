@@ -1,20 +1,31 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import axios from "axios"
-import { updateCake } from "../services/api"
 
 function EditCake() {
   const { id } = useParams()
 
   const navigate = useNavigate()
 
-  const [cake, setCake] = useState({})
+  const [cake, setCake] = useState({
+    name: "",
+    flavor: "",
+    price: "",
+    description: "",
+    image: ""
+  })
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:3001/cakes/${id}`)
-      .then((response) => setCake(response.data))
-  }, [])
+    const savedCakes =
+      JSON.parse(localStorage.getItem("cakes")) || []
+
+    const foundCake = savedCakes.find(
+      (cake) => cake.id === Number(id)
+    )
+
+    if (foundCake) {
+      setCake(foundCake)
+    }
+  }, [id])
 
   const handleChange = (e) => {
     setCake({
@@ -23,10 +34,22 @@ function EditCake() {
     })
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
 
-    await updateCake(id, cake)
+    const savedCakes =
+      JSON.parse(localStorage.getItem("cakes")) || []
+
+    const updatedCakes = savedCakes.map((item) =>
+      item.id === Number(id)
+        ? cake
+        : item
+    )
+
+    localStorage.setItem(
+      "cakes",
+      JSON.stringify(updatedCakes)
+    )
 
     navigate("/products")
   }
@@ -37,17 +60,47 @@ function EditCake() {
       className="p-6 flex flex-col gap-4 max-w-md mx-auto"
     >
       <input
+        type="text"
         name="name"
-        value={cake.name || ""}
+        placeholder="Cake Name"
+        value={cake.name}
         onChange={handleChange}
-        className="border p-2"
+        className="border p-2 rounded"
       />
 
       <input
-        name="price"
-        value={cake.price || ""}
+        type="text"
+        name="flavor"
+        placeholder="Flavor"
+        value={cake.flavor}
         onChange={handleChange}
-        className="border p-2"
+        className="border p-2 rounded"
+      />
+
+      <input
+        type="number"
+        name="price"
+        placeholder="Price"
+        value={cake.price}
+        onChange={handleChange}
+        className="border p-2 rounded"
+      />
+
+      <input
+        type="text"
+        name="image"
+        placeholder="Image URL"
+        value={cake.image}
+        onChange={handleChange}
+        className="border p-2 rounded"
+      />
+
+      <textarea
+        name="description"
+        placeholder="Description"
+        value={cake.description}
+        onChange={handleChange}
+        className="border p-2 rounded"
       />
 
       <button className="bg-[#0033a0] text-white p-2 rounded">
